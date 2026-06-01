@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 
 # Ajusta o path para permitir importações locais sem o ponto relativo
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -31,7 +32,6 @@ def main():
 
     novas_cartas_data = controller.getPokemonAleatorio(5)
     
-    import json
     # Retorna o JSON formatado das cartas geradas
     print("\n[Output JSON]")
     print(json.dumps(novas_cartas_data, indent=4, ensure_ascii=False))

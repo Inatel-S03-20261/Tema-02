@@ -9,7 +9,7 @@ class DistribuicaoController:
         self.service = service
 
     def getJogadorID(self) -> int:
-        # Mock logic to represent getting an ID (could be from session or auth)
+        # Mock logic to represent getting an ID 
         import random
         return random.randint(1000, 9999)
 
