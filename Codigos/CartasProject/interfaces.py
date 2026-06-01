@@ -27,8 +27,3 @@ class InterfaceCartasService(ABC):
     @abstractmethod
     def requisicaoTroca(self, dadosTroca: TrocasRequestDTO) -> bool:
         pass
-
-class InterfaceDistribuicaoService(ABC):
-    @abstractmethod
-    def distribuirCartas(self, idJogador: int, idsPokemon: List[int]) -> None:
-        pass
