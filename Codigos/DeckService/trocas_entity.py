@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 @dataclass
-class TrocasRequestDTO:
+class TrocaEntity:
     idJogadorOrigem: int
     idJogadorDestino: int
     idsPokemonsRecebidos: List[int]
