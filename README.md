@@ -31,4 +31,6 @@ A aplicação utiliza a API pública:
 
 - 🌐 https://pokeapi.co/
 
+- Link do video: https://drive.google.com/drive/folders/1vhd801y_KEQEN1ixP0-H_R89QsO56pqX?usp=drive_link
+
 -------------------------
