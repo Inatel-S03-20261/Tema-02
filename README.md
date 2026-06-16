@@ -33,4 +33,6 @@ A aplicação utiliza a API pública:
 
 - Link do video: https://drive.google.com/drive/folders/1vhd801y_KEQEN1ixP0-H_R89QsO56pqX?usp=drive_link
 
+- 🌐 Interface para teste: https://pokemon-card-dealer.onrender.com/
+
 -------------------------
