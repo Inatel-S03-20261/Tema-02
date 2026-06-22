@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interface - TEMA 02</title>
+  <link rel="icon" href="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: clamp(10px, 2.6vw, 16px); }
+
+    body { background: #1a1a2e; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 2rem 1rem; font-family: sans-serif; }
+
+    .dex-wrap { display: flex; justify-content: center; align-items: flex-start; width: 100%; }
+
+    .dex-body {
+      background: #e3232c;
+      border-radius: 1rem 1rem 1rem 3rem;
+      padding: 1.5rem 1.5rem 2.5rem;
+      width: 32.5rem;
+      max-width: 100%;
+      border: 3px solid #8b0000;
+      position: relative;
+    }
+
+    .dex-top { display: flex; align-items: center; gap: 0.875rem; margin-bottom: 1.25rem; }
+
+    .dex-camera {
+      width: 3rem; height: 3rem; border-radius: 50%;
+      background: #6af; border: 0.25rem solid #fff;
+      box-shadow: inset 0 0 0 0.375rem #3090e0, inset 0 0 0 0.5rem #1a6fc4;
+      flex-shrink: 0;
+    }
+
+    .dex-lights { display: flex; gap: 0.5rem; align-items: center; }
+    .dex-light { width: 1rem; height: 1rem; border-radius: 50%; }
+    .l-red   { background: #ff4444; border: 2px solid #aa0000; }
+    .l-yel   { background: #ffee44; border: 2px solid #aaaa00; }
+    .l-green { background: #44ee44; border: 2px solid #008800; }
+
+    .dex-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.6875rem; color: #fff;
+      text-shadow: 2px 2px #8b0000;
+      margin-left: auto; letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .dex-screen-wrap { background: #333; border-radius: 0.625rem; padding: 0.625rem; border: 3px solid #111; margin-bottom: 1.25rem; }
+
+    .dex-screen {
+      background: #9bbc0f; border-radius: 0.375rem; padding: 1rem;
+      min-height: 16.25rem; border: 2px solid #556b00;
+      font-family: 'Press Start 2P', monospace; font-size: 0.5rem; color: #1a3300; position: relative;
+    }
+
+    .screen-header { font-size: 0.5625rem; color: #1a3300; margin-bottom: 0.875rem; border-bottom: 2px solid #556b00; padding-bottom: 0.5rem; text-align: center; }
+    .screen-panel { display: none; }
+    .screen-panel.active { display: block; }
+
+    .idle-art { text-align: center; padding: 1.25rem 0; }
+    .idle-msg { font-size: 0.4375rem; color: #1a3300; line-height: 2; text-align: center; }
+
+    .field-row { margin-bottom: 0.75rem; }
+    .field-label { font-size: 0.4375rem; color: #1a3300; margin-bottom: 0.375rem; display: block; }
+
+    .dex-input {
+      width: 100%; background: #8bab0f; border: 2px solid #556b00;
+      border-radius: 0.25rem; padding: 0.5rem 0.625rem; line-height: 1.2;
+      font-family: 'Press Start 2P', monospace; font-size: 0.5rem; color: #1a3300; outline: none;
+    }
+    .dex-input:focus { border-color: #1a3300; background: #7da00e; }
+    .dex-input::placeholder { color: #556b0099; font-size: 0.4375rem; }
+
+    .result-box { background: #8bab0f; border: 2px solid #556b00; border-radius: 0.25rem; padding: 0.625rem; min-height: 3rem; margin-top: 0.375rem; }
+    .result-label { font-size: 0.4375rem; color: #556b00; margin-bottom: 0.375rem; display: block; }
+
+    .pokemon-chips { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+    .poke-chip { background: #1a3300; color: #9bbc0f; font-family: 'Press Start 2P', monospace; font-size: 0.4375rem; padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: 1px solid #556b00; }
+    .poke-chip.empty { color: #556b00; background: transparent; border: 1px dashed #556b00; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; }
+    .section-title { font-size: 0.4375rem; color: #556b00; margin-bottom: 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid #556b00; }
+    .trade-section { background: #8bab0f; border: 1px solid #556b00; border-radius: 0.25rem; padding: 0.5rem; margin-bottom: 0.625rem; }
+
+    .status-msg { font-size: 0.4375rem; text-align: center; padding: 0.5rem; border-radius: 0.25rem; margin-top: 0.5rem; display: none; }
+    .status-msg.success { display: block; background: #1a3300; color: #9bbc0f; }
+    .status-msg.error   { display: block; background: #5a0000; color: #ffaaaa; }
+    .status-msg.loading { display: block; background: #1a3300; color: #9bbc0f; }
+
+    .novo-jogador-wrap { display: flex; justify-content: flex-end; margin-bottom: 0.75rem; }
+    .btn-novo-jogador {
+      background: transparent; border: 1px dashed #aa0000;
+      border-radius: 0.375rem; padding: 0.3rem 0.6rem;
+      font-family: 'Press Start 2P', monospace; font-size: 0.35rem;
+      color: #ffaaaa; cursor: pointer; opacity: 0.65;
+      transition: opacity 0.2s, border-color 0.2s;
+      display: flex; align-items: center; gap: 0.3rem;
+    }
+    .btn-novo-jogador:hover  { opacity: 1; border-color: #ff6666; color: #fff; }
+    .btn-novo-jogador.active { opacity: 1; border-color: #ff6666; color: #fff; border-style: solid; }
+
+    .dex-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.125rem; }
+
+    .dex-btn {
+      background: #cc1a22; border: 3px solid #8b0000; border-radius: 0.5rem;
+      padding: 0.75rem 0.5rem; font-family: 'Press Start 2P', monospace;
+      font-size: 0.4375rem; color: #fff; cursor: pointer; text-align: center;
+      text-shadow: 1px 1px #8b0000; transition: transform 0.1s, background 0.1s; line-height: 1.8;
+    }
+    .dex-btn:hover { background: #e62030; }
+    .dex-btn:active { transform: scale(0.97); }
+    .dex-btn.selected { background: #8b0000; border-color: #500; box-shadow: inset 0 2px 6px #00000055; }
+
+    .dex-action-btn {
+      width: 100%; background: #1a3300; border: 2px solid #556b00;
+      border-radius: 0.375rem; padding: 0.5625rem; font-family: 'Press Start 2P', monospace;
+      font-size: 0.4375rem; color: #9bbc0f; cursor: pointer; margin-top: 0.625rem;
+      transition: background 0.1s, transform 0.1s;
+    }
+    .dex-action-btn:hover  { background: #2a5500; }
+    .dex-action-btn:active { transform: scale(0.98); }
+
+    .dex-dpad-row { display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem; }
+
+    .dpad { display: grid; grid-template-columns: repeat(3, 1.25rem); grid-template-rows: repeat(3, 1.25rem); gap: 0.125rem; }
+    .dp { background: #222; border-radius: 0.1875rem; }
+    .dp.center { background: #333; border-radius: 50%; }
+
+    .abxy { display: grid; grid-template-columns: repeat(2, 1.375rem); grid-template-rows: repeat(2, 1.375rem); gap: 0.25rem; }
+    .ab { width: 1.375rem; height: 1.375rem; border-radius: 50%; font-family: 'Press Start 2P', monospace; font-size: 0.4375rem; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+    .ab-a { background: #e33; color: #fff; position: relative; top: 0.65rem; }
+    .ab-b { background: #fa0; color: #fff; }
+    .ab-x { background: #44f; color: #fff; position: relative; top: 0.65rem; }
+    .ab-y { background: #3a3; color: #fff; }
+
+    @media (max-width: 420px) {
+      body { padding: 1rem 0.5rem; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .dpad { display: none; }
+    }
+
+  </style>
+</head>
+<body>
+<div class="dex-wrap">
+  <div class="dex-body">
+    <div class="dex-top">
+      <div class="dex-camera"></div>
+      <div class="dex-lights">
+        <div class="dex-light l-red"></div>
+        <div class="dex-light l-yel"></div>
+        <div class="dex-light l-green"></div>
+      </div>
+      <div class="dex-title">Tema 02</div>
+    </div>
+
+    <div class="dex-screen-wrap">
+      <div class="dex-screen">
+
+        <div id="panel-idle" class="screen-panel active">
+          <div class="idle-art">
+            <svg width="80" height="80" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;display:block;margin:0 auto 12px;">
+              <rect x="5" y="1" width="6" height="1" fill="#1a3300"/>
+              <rect x="3" y="2" width="10" height="1" fill="#1a3300"/>
+              <rect x="2" y="3" width="12" height="1" fill="#1a3300"/>
+              <rect x="2" y="4" width="12" height="1" fill="#1a3300"/>
+              <rect x="2" y="5" width="12" height="5" fill="#1a3300"/>
+              <rect x="3" y="6" width="3" height="2" fill="#9bbc0f"/>
+              <rect x="10" y="6" width="3" height="2" fill="#9bbc0f"/>
+              <rect x="1" y="6" width="2" height="3" fill="#1a3300"/>
+              <rect x="13" y="6" width="2" height="3" fill="#1a3300"/>
+              <rect x="2" y="10" width="12" height="1" fill="#1a3300"/>
+              <rect x="3" y="11" width="10" height="1" fill="#1a3300"/>
+              <rect x="4" y="12" width="2" height="3" fill="#1a3300"/>
+              <rect x="10" y="12" width="2" height="3" fill="#1a3300"/>
+            </svg>
+            <div class="idle-msg">SELECIONE UMA OPCAO<br><br>&gt; AGUARDANDO INPUT...</div>
+          </div>
+        </div>
+
+        <div id="panel-consultar" class="screen-panel">
+          <div class="screen-header">[ CONSULTAR CARTAS ]</div>
+          <div class="field-row">
+            <label class="field-label" for="inp-jogador-id">ID DO JOGADOR:</label>
+            <input id="inp-jogador-id" class="dex-input" type="number" placeholder="ex: 1042" min="1"/>
+          </div>
+          <button class="dex-action-btn" onclick="consultarCartas()">&gt; BUSCAR CARTAS</button>
+          <div class="field-row" style="margin-top:12px;">
+            <span class="result-label">POKEMONS DO JOGADOR:</span>
+            <div class="result-box">
+              <div class="pokemon-chips" id="result-chips">
+                <span class="poke-chip empty">---</span>
+                <span class="poke-chip empty">---</span>
+                <span class="poke-chip empty">---</span>
+                <span class="poke-chip empty">---</span>
+                <span class="poke-chip empty">---</span>
+              </div>
+            </div>
+          </div>
+          <div id="msg-consultar" class="status-msg"></div>
+        </div>
+
+        <div id="panel-troca" class="screen-panel">
+          <div class="screen-header">[ EFETUAR TROCA ]</div>
+          <div class="grid-2">
+            <div class="trade-section">
+              <div class="section-title">JOGADOR ORIGEM</div>
+              <div class="field-row">
+                <label class="field-label" for="t-id-origem">ID:</label>
+                <input id="t-id-origem" class="dex-input" type="number" placeholder="ID" min="1"/>
+              </div>
+              <div class="field-row">
+                <label class="field-label" for="t-pokemon-envia">IDs ENVIADOS:</label>
+                <input id="t-pokemon-envia" class="dex-input" type="text" placeholder="1,2,3"/>
+                <span class="field-label" style="margin-top:3px;font-size:6px;color:#556b00">separe por virgula</span>
+              </div>
+            </div>
+            <div class="trade-section">
+              <div class="section-title">JOGADOR DESTINO</div>
+              <div class="field-row">
+                <label class="field-label" for="t-id-destino">ID:</label>
+                <input id="t-id-destino" class="dex-input" type="number" placeholder="ID" min="1"/>
+              </div>
+              <div class="field-row">
+                <label class="field-label" for="t-pokemon-recebe">IDs RECEBIDOS:</label>
+                <input id="t-pokemon-recebe" class="dex-input" type="text" placeholder="4,5,6"/>
+                <span class="field-label" style="margin-top:3px;font-size:6px;color:#556b00">separe por virgula</span>
+              </div>
+            </div>
+          </div>
+          <button class="dex-action-btn" onclick="efetuarTroca()">&gt; CONFIRMAR TROCA</button>
+          <div id="msg-troca" class="status-msg"></div>
+        </div>
+
+        <div id="panel-novo-jogador" class="screen-panel">
+          <div class="screen-header">[ NOVO JOGADOR ]</div>
+          <div class="field-row">
+            <label class="field-label" for="nj-id">ID DO NOVO JOGADOR:</label>
+            <input id="nj-id" class="dex-input" type="number" placeholder="ex: 2048" min="1"/>
+          </div>
+          <button class="dex-action-btn" onclick="criarJogador()">&gt; REGISTRAR E SORTEAR</button>
+          <div class="field-row" style="margin-top:0.75rem;">
+            <span class="result-label">DECK INICIAL SORTEADO:</span>
+            <div class="result-box">
+              <div class="pokemon-chips" id="nj-chips">
+                <span class="poke-chip empty">---</span>
+                <span class="poke-chip empty">---</span>
+                <span class="poke-chip empty">---</span>
+                <span class="poke-chip empty">---</span>
+                <span class="poke-chip empty">---</span>
+              </div>
+            </div>
+          </div>
+          <div id="msg-novo-jogador" class="status-msg"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="novo-jogador-wrap">
+      <button class="btn-novo-jogador" id="btn-novo-jogador" onclick="selectPanel('novo-jogador')">
+        + NOVO JOGADOR
+      </button>
+    </div>
+
+    <div class="dex-buttons">
+      <button class="dex-btn" id="btn-consultar" onclick="selectPanel('consultar')">
+        <i class="ti ti-cards" style="font-size:16px;display:block;margin-bottom:6px;"></i>
+        CONSULTAR<br>CARTAS
+      </button>
+      <button class="dex-btn" id="btn-troca" onclick="selectPanel('troca')">
+        <i class="ti ti-switch-horizontal" style="font-size:16px;display:block;margin-bottom:6px;"></i>
+        EFETUAR<br>TROCA
+      </button>
+    </div>
+
+    <div class="dex-dpad-row">
+      <div class="dpad">
+        <div class="dp"></div><div class="dp"></div><div class="dp"></div>
+        <div class="dp"></div><div class="dp center"></div><div class="dp"></div>
+        <div class="dp"></div><div class="dp"></div><div class="dp"></div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <div style="width:18px;height:18px;border-radius:50%;background:#333;border:2px solid #111;"></div>
+        <div style="width:18px;height:18px;border-radius:50%;background:#333;border:2px solid #111;"></div>
+      </div>
+      <div class="abxy">
+        <div></div>
+        <button class="ab ab-x">X</button>
+        <button class="ab ab-y">Y</button>
+        <button class="ab ab-a">A</button>
+        <button class="ab ab-b">B</button>
+        <div></div>
+      </div>
+    </div>
+
+    <div></div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = 'https://pokemon-card-dealer.onrender.com';
+
+  const ALL_PANELS = ['idle', 'consultar', 'troca', 'novo-jogador'];
+
+  function selectPanel(name) {
+    ALL_PANELS.forEach(p => document.getElementById('panel-' + p).classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+
+    ['consultar', 'troca'].forEach(b => {
+      document.getElementById('btn-' + b).classList.toggle('selected', b === name);
+    });
+
+    const btnNovo = document.getElementById('btn-novo-jogador');
+    btnNovo.classList.toggle('active', name === 'novo-jogador');
+  }
+
+  function setMsg(id, type, text) {
+    const el = document.getElementById(id);
+    el.className = 'status-msg ' + type;
+    el.textContent = text;
+  }
+
+  function renderChips(containerId, ids) {
+    const c = document.getElementById(containerId);
+    if (!ids || ids.length === 0) {
+      c.innerHTML = '<span class="poke-chip empty">NENHUMA CARTA</span>';
+      return;
+    }
+    c.innerHTML = ids.slice(0, 5).map(id => `<span class="poke-chip">ID: ${id}</span>`).join('');
+  }
+
+  async function consultarCartas() {
+    const id = document.getElementById('inp-jogador-id').value.trim();
+    if (!id) { setMsg('msg-consultar', 'error', '> INFORME UM ID'); return; }
+    renderChips('result-chips', []);
+    setMsg('msg-consultar', 'loading', '> BUSCANDO...');
+    try {
+      const res = await fetch(`${API_BASE}/cartas/${id}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      renderChips('result-chips', data);
+      setMsg('msg-consultar', 'success', `> ${data.length} CARTA(S) ENCONTRADA(S)`);
+    } catch (e) {
+      renderChips('result-chips', []);
+      setMsg('msg-consultar', 'error', '> ERRO AO CONECTAR COM O SERVIDOR');
+    }
+  }
+
+  function parseIds(str) {
+    return str.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+  }
+
+  async function efetuarTroca() {
+    const idOrigem  = parseInt(document.getElementById('t-id-origem').value);
+    const idDestino = parseInt(document.getElementById('t-id-destino').value);
+    const enviados  = parseIds(document.getElementById('t-pokemon-envia').value);
+    const recebidos = parseIds(document.getElementById('t-pokemon-recebe').value);
+
+    if (!idOrigem || !idDestino)               { setMsg('msg-troca', 'error', '> INFORME OS IDs DOS JOGADORES'); return; }
+    if (!enviados.length || !recebidos.length) { setMsg('msg-troca', 'error', '> INFORME OS IDs DOS POKEMONS'); return; }
+
+    setMsg('msg-troca', 'loading', '> PROCESSANDO TROCA...');
+
+    try {
+      const resAntes = await fetch(`${API_BASE}/cartas/${idOrigem}`, { cache: 'no-store' });
+      const cartasAntes = await resAntes.json();
+
+      const res = await fetch(`${API_BASE}/trocas`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          idJogadorOrigem:      idOrigem,
+          idJogadorDestino:     idDestino,
+          idsPokemonsEnviados:  enviados,
+          idsPokemonsRecebidos: recebidos
+        })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      setMsg('msg-troca', 'loading', '> AGUARDANDO CONFIRMACAO MQTT...');
+      await new Promise(resolve => setTimeout(resolve, 7000));
+
+      const resDepois = await fetch(`${API_BASE}/cartas/${idOrigem}`, { cache: 'no-store' });
+      const cartasDepois = await resDepois.json();
+
+      console.log('Deck Antes: ',  cartasAntes);
+      console.log('Deck Depois:', cartasDepois);
+
+      if (JSON.stringify(cartasAntes) !== JSON.stringify(cartasDepois)) {
+        setMsg('msg-troca', 'success', '> TROCA VALIDADA E CONCLUIDA!');
+        document.getElementById('inp-jogador-id').value = idOrigem;
+        consultarCartas();
+      } else {
+        setMsg('msg-troca', 'error', '> ERRO: REJEITADA PELAS REGRAS (Veja o Terminal)');
+      }
+    } catch (e) {
+      setMsg('msg-troca', 'error', '> ERRO AO CONECTAR COM O SERVIDOR');
+    }
+  }
+
+  async function criarJogador() {
+    const id = document.getElementById('nj-id').value.trim();
+    if (!id) { setMsg('msg-novo-jogador', 'error', '> INFORME UM ID'); return; }
+
+    renderChips('nj-chips', []);
+    setMsg('msg-novo-jogador', 'loading', '> VERIFICANDO REGISTROS...');
+
+    try {
+      const resAntes = await fetch(`${API_BASE}/cartas/${id}`, { cache: 'no-store' });
+      const cartasAntes = await resAntes.json();
+
+      if (cartasAntes && cartasAntes.length > 0) {
+        setMsg('msg-novo-jogador', 'error', '> JOGADOR JA CADASTRADO!');
+        return; 
+      }
+
+      setMsg('msg-novo-jogador', 'loading', '> REGISTRANDO JOGADOR...');
+      const res = await fetch(`${API_BASE}/jogador`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_jogador: parseInt(id) })
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      setMsg('msg-novo-jogador', 'loading', '> AGUARDANDO SORTEIO...');
+      await new Promise(resolve => setTimeout(resolve, 7000));
+
+      const resCartas = await fetch(`${API_BASE}/cartas/${id}`, { cache: 'no-store' });
+      const ids = await resCartas.json();
+
+      if (ids && ids.length > 0) {
+        renderChips('nj-chips', ids);
+        setMsg('msg-novo-jogador', 'success', `> DECK CRIADO! ${ids.length} CARTA(S) SORTEADA(S)`);
+      } else {
+        setMsg('msg-novo-jogador', 'error', '> ERRO: REJEITADO PELO WORKER (Veja o Terminal)');
+      }
+
+    } catch (e) {
+      setMsg('msg-novo-jogador', 'error', '> ERRO AO CONECTAR COM O SERVIDOR');
+    }
+}
+</script>
+</body>
+</html>
