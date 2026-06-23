@@ -74,16 +74,16 @@ Browser → POST /trocas → main.py → produtor.simular_troca()
 
 ---
 
-## 📨 MOM — Middleware Orientado a Mensagens
+## 🏛️ SOA — Arquitetura Orientada a Serviços
 ###### Como as demais aplicações ainda não tinham definido protocolo de comunicação até o fechamento desta versão, optamos por implementar um broker MQTT próprio para simular a intercomunicação entre os serviços, garantindo que nossa entrega fosse independente e funcional dentro do prazo.
 
-O sistema usa **MQTT sobre TLS** com o broker **HiveMQ Cloud** como middleware de comunicação assíncrona entre o API Gateway e o Worker.
+O sistema foi modelado sob o paradigma **SOA (Service-Oriented Architecture)**, separando as capacidades de negócio em domínios lógicos (`DeckService` e `DistribuicaoService`). A comunicação entre o API Gateway (`main.py`) e os serviços de processamento (`worker.py`) ocorre por meio de contratos bem definidos trafegados em um barramento assíncrono (HiveMQ Cloud).
 
-O API Gateway (`main.py`) e o Worker (`worker.py`) são processos **completamente desacoplados**: o gateway publica um evento e retorna imediatamente, sem esperar pelo processamento. O worker consome as mensagens de forma independente, garantindo:
+Essa abordagem garante os princípios fundamentais da arquitetura SOA:
 
-- **Desacoplamento temporal** — produtor e consumidor não precisam estar ativos ao mesmo tempo  
-- **Resiliência** — mensagens com QoS 1 são entregues pelo menos uma vez, mesmo com reconexões  
-- **Escalabilidade** — múltiplos workers podem subscrever o mesmo tópico simultaneamente
+- **Desacoplamento de Serviços** — O Gateway atua apenas como roteador e publicador, sem conhecer a lógica interna dos serviços de domínio. Ele publica uma solicitação no barramento e retorna imediatamente.
+- **Interoperabilidade** — A comunicação baseada em contratos JSON padronizados permite que qualquer outro sistema, escrito em qualquer linguagem, consuma ou publique eventos no nosso barramento.
+- **Autonomia e Resiliência** — Como os serviços operam de forma independente através do barramento, picos de requisição no Gateway não derrubam os serviços de processamento, e falhas temporárias são mitigadas (mensagens QoS 1 garantem entrega).
 
 ### Tópicos MQTT
 
